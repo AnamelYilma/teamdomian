@@ -1,968 +1,1031 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Abyssinia Digital Creators — Web Studio</title>
-  <meta name="description" content="Abyssinia Digital Creators — Web development studio portfolio and services."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@600;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Natural Ninja - Unsupervised Learning & DBSCAN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Quicksand:wght@400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg-0:#060A17;
-      --bg-1:#0B1630;
-      --bg-2:#0E1E45;
-      --primary:#3BA1FF;
-      --primary-2:#7CC4FF;
-      --accent:#6EE7F9;
-      --muted:#8AA0C2;
-      --text:#E7F0FF;
-      --card:#0C1836CC;
-      --glass:rgba(255,255,255,.06);
-      --shadow:0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.03);
-      --radius-xl:16px;
+    :root {
+      --primary: #00e7ff;
+      --secondary: #ff268a;
+      --accent1: #b96cff;
+      --accent2: #ffcc00;
+      --accent3: #00ff88;
+      --dark-bg: #0a0a1a;
+      --darker-bg: #060612;
+      --card-bg: rgba(20, 20, 40, 0.7);
+      --text: #e0f0ff;
+      --text-secondary: #a0c0ff;
+      --glow-primary: 0 0 15px rgba(0, 231, 255, 0.4);
+      --glow-secondary: 0 0 15px rgba(255, 38, 138, 0.4);
+      --glow-accent1: 0 0 15px rgba(185, 108, 255, 0.4);
+      --border-light: rgba(255, 255, 255, 0.1);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; color:var(--text); overflow-x:hidden}
-    body{
-      background: radial-gradient(1200px 800px at 80% -10%, #152A55 0%, transparent 60%),
-                  radial-gradient(800px 600px at -10% 20%, #101C3B 0%, transparent 55%),
-                  linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-2) 100%);
-      background-attachment: fixed;
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    a{color:inherit; text-decoration:none}
-    img{max-width:100%; display:block}
-    .container{width:min(1200px, 92%); margin-inline:auto}
-    .btn{display:inline-flex; gap:.6rem; align-items:center; padding:.9rem 1.2rem; border-radius:999px; font-weight:700; letter-spacing:.2px; transition:transform .2s ease, box-shadow .2s ease, background .2s ease, filter 0.3s ease; border:1px solid transparent}
-    .btn-primary{background:linear-gradient(135deg, var(--primary), #4F8BFF); color:#001026; box-shadow:0 10px 25px rgba(59,161,255,.35)}
-    .btn-primary:hover{transform:translateY(-3px); box-shadow:0 16px 35px rgba(59,161,255,.5); filter:brightness(1.1)}
-    .btn-ghost{background:transparent; border-color:#29406B; color:var(--primary-2)}
-    .btn-ghost:hover{background:rgba(59,161,255,0.1); transform:translateY(-2px)}
-    .chip{display:inline-flex; align-items:center; gap:.5rem; padding:.35rem .7rem; border-radius:999px; background:rgba(59,161,255,.12); color:var(--primary-2); border:1px solid rgba(124,196,255,.18); font-size:.85rem; transition:all 0.3s ease}
-    .chip:hover{background:rgba(59,161,255,.2); transform:scale(1.05)}
-    .glass{background:var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,.07)}
-    .card{background:var(--card); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius-xl); box-shadow:var(--shadow); transition:transform 0.3s ease, box-shadow 0.3s ease}
-    .card:hover{transform:translateY(-6px); box-shadow:0 20px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05)}
-    .section{padding: 90px 0}
-    .section h2{font-family:Manrope,Inter,sans-serif; font-weight:800; font-size:clamp(1.6rem, 1.2rem + 2vw, 2.6rem); letter-spacing:.2px; margin:0 0 18px; position:relative}
-    .section h2::after{content:''; position:absolute; bottom:-8px; left:0; width:60px; height:3px; background:var(--primary); border-radius:2px}
-    .section p.lead{margin:0 0 14px; color:#C9DAFF; font-size:1.05rem}
+
+    body {
+      background: linear-gradient(135deg, var(--darker-bg), var(--dark-bg), #120b2c);
+      color: var(--text);
+      font-family: 'Quicksand', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated Background Glows */
+    .glow {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    .glow-1 {
+      background: var(--primary);
+      top: 10%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .glow-2 {
+      background: var(--secondary);
+      bottom: 15%;
+      right: 10%;
+      animation-delay: 5s;
+    }
+
+    .glow-3 {
+      background: var(--accent1);
+      top: 50%;
+      right: 20%;
+      animation-delay: 10s;
+    }
+
+    .glow-4 {
+      background: var(--accent3);
+      bottom: 20%;
+      left: 20%;
+      animation-delay: 7s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(0.9); }
+      25% { transform: translate(20px, 30px) scale(1.1); }
+      50% { transform: translate(10px, -20px) scale(1); }
+      75% { transform: translate(-20px, 10px) scale(1.05); }
+    }
 
     /* Header */
-    header{position:sticky; top:0; z-index:60; background:linear-gradient(180deg, rgba(6,10,23,.94), rgba(6,10,23,.8) 60%, transparent); backdrop-filter:saturate(1.1) blur(12px); -webkit-backdrop-filter: saturate(1.1) blur(12px); border-bottom:1px solid rgba(255,255,255,.05); transition:all 0.4s ease}
-    .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 0}
-    .brand{display:flex; align-items:center; gap:.8rem; font-weight:900; letter-spacing:.6px; transition:transform 0.3s ease}
-    .brand:hover{transform:scale(1.03)}
-    .logo{width:38px; height:38px; border-radius:12px; background:conic-gradient(from 160deg, #7CC4FF, #3BA1FF 35%, #6EE7F9 70%, #7CC4FF); box-shadow:0 6px 16px rgba(62,146,255,.45), inset 0 0 14px rgba(255,255,255,.16); animation:rotate 6s linear infinite}
-    nav ul{list-style:none; display:flex; gap:1.2rem; padding:0; margin:0}
-    nav a{opacity:.9; padding:8px 12px; border-radius:8px; transition:all 0.3s ease}
-    nav a:hover{opacity:1; background:rgba(59,161,255,0.15); transform:scale(1.05)}
-    .nav-cta{display:flex; gap:.7rem}
-    .mobile-toggle{display:none}
-
-    /* Hero */
-    .hero{position:relative; padding:140px 0 100px}
-    .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:42px; align-items:center}
-    .eyebrow{display:inline-flex; align-items:center; gap:.6rem; font-weight:700; color:var(--primary-2); letter-spacing:.25px; margin-bottom:12px}
-    .eyebrow .dot{width:8px; height:8px; background:var(--accent); border-radius:999px; box-shadow:0 0 16px var(--accent); animation: pulse 2s infinite}
-    .title{font-family:Manrope,Inter,sans-serif; font-weight:900; line-height:1.05; font-size: clamp(2rem, 1.2rem + 4vw, 4rem); margin:0 0 1.2rem; opacity:0; transform:translateY(20px)}
-    .title.animated{animation:slideUp 0.8s forwards}
-    .title .gradient{background:linear-gradient(180deg, var(--primary-2), #D6E9FF 80%); -webkit-background-clip:text; background-clip:text; color:transparent; animation:gradientShift 4s ease-in-out infinite alternate}
-    .sub{color:#BFD3FF; font-size:1.08rem; max-width:55ch; opacity:0; transform:translateY(20px)}
-    .sub.animated{animation:slideUp 0.8s 0.2s forwards}
-    .hero-cta{display:flex; gap:14px; margin-top:22px; flex-wrap:wrap; opacity:0; transform:translateY(20px)}
-    .hero-cta.animated{animation:slideUp 0.8s 0.4s forwards}
-    .stat-badges{display:flex; gap:14px; margin-top:26px; flex-wrap:wrap; opacity:0; transform:translateY(20px)}
-    .stat-badges.animated{animation:slideUp 0.8s 0.6s forwards}
-    .stat{padding:.7rem 1rem; border-radius:12px; border:1px solid rgba(124,196,255,.16); background:rgba(9,20,45,.6); transition:all 0.3s ease}
-    .stat:hover{transform:translateY(-3px); border-color:var(--primary)}
-    .stat b{font-size:1.1rem}
-
-    /* Hero visual */
-    .hero-visual{position:relative; border-radius:22px; overflow:hidden; border:1px solid rgba(255,255,255,.08); box-shadow:var(--shadow); padding:18px; background:linear-gradient(180deg,#0E1E45, #0B1630); opacity:0; transform:translateX(30px)}
-    .hero-visual.animated{animation:slideInRight 1s 0.3s forwards}
-    .hero-badge{position:absolute; top:16px; right:16px; padding:.45rem .7rem; border-radius:999px; background:rgba(59,161,255,.14); border:1px solid rgba(124,196,255,.28); color:#CFE6FF; font-weight:700; font-size:.85rem; animation:glow 3s ease-in-out infinite alternate}
-    .logo-slab{
-      height: 220px; display:grid; place-items:center; border-radius:14px;
-      background:
-        radial-gradient(300px 140px at 30% -20%, rgba(124,196,255,.35), transparent 60%),
-        radial-gradient(260px 180px at 100% 0%, rgba(110,231,249,.18), transparent 60%),
-        linear-gradient(180deg, #0F2250, #0B1838);
-      position:relative; overflow:hidden;
+    header {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      position: relative;
+      z-index: 10;
     }
-    .logo-gem{
-      width:110px; height:110px; border-radius:26px;
-      background:conic-gradient(from 30deg, #7CC4FF, #3BA1FF 30%, #6EE7F9 65%, #CFE6FF 80%, #7CC4FF);
-      box-shadow:0 12px 28px rgba(59,161,255,.35), inset 0 0 18px rgba(255,255,255,.18);
-      transform:rotate(8deg);
-      animation:gemFloat 6s ease-in-out infinite, rotate 8s linear infinite;
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 3.8rem;
+      background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent1), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: var(--glow-primary);
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      animation: titlePulse 4s infinite alternate;
     }
-    .spark{position:absolute; border-radius:50%; background:radial-gradient(circle at 30% 30%, #9ED6FF, rgba(59,161,255,.6) 60%, transparent 70%); opacity:.85; filter:blur(.15px); animation:float 8s ease-in-out infinite}
-    .spark.s1{width:10px; height:10px; left:14%; top:20%}
-    .spark.s2{width:14px; height:14px; right:18%; top:28%; animation-delay:1s}
-    .spark.s3{width:8px; height:8px; right:12%; bottom:16%; animation-delay:.4s}
-    .showreel{
-      margin-top:16px; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,.08);
-      aspect-ratio:16/9; background:#0B1630; display:grid; place-items:center; cursor:pointer;
-      transition:transform 0.3s ease, box-shadow 0.3s ease;
+
+    @keyframes titlePulse {
+      0% { text-shadow: 0 0 10px rgba(0, 231, 255, 0.4); }
+      50% { text-shadow: 0 0 30px rgba(255, 38, 138, 0.6), 0 0 40px rgba(185, 108, 255, 0.5); }
+      100% { text-shadow: 0 0 20px rgba(0, 255, 136, 0.7), 0 0 30px rgba(0, 231, 255, 0.5); }
     }
-    .showreel:hover{transform:scale(1.02); box-shadow:0 20px 40px rgba(0,0,0,.5)}
-    .play{
-      display:inline-flex; align-items:center; gap:.6rem; padding:.6rem .9rem; border-radius:999px;
-      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); font-weight:700; color:#D6E9FF;
-      transition:all 0.3s ease;
+
+    .subtitle {
+      font-size: 1.3rem;
+      color: var(--accent2);
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
     }
-    .play:hover{background:rgba(59,161,255,0.2); transform:scale(1.05)}
-    .scroll-arrow{animation:bounce 2s infinite; margin-top:20px; display:inline-block}
 
-    /* Services */
-    .grid{display:grid; gap:18px}
-    .grid-3{grid-template-columns:repeat(3, 1fr)}
-    .grid-4{grid-template-columns:repeat(4, 1fr)}
-    .service{position:relative; overflow:hidden; opacity:0; transform:translateY(20px)}
-    .service.animated{animation:slideUp 0.6s forwards}
-    .service .halo{position:absolute; inset:-1px; background:radial-gradient(240px 160px at 20% 20%, rgba(59,161,255,.16), transparent 60%); pointer-events:none; opacity:0; transition:opacity 0.5s ease}
-    .service:hover .halo{opacity:1}
-    .service .icon{width:42px; height:42px; border-radius:12px; display:grid; place-items:center; background:linear-gradient(135deg, rgba(124,196,255,.14), rgba(110,231,249,.12)); border:1px solid rgba(255,255,255,.08)}
-    .service h3{margin:.6rem 0 .3rem; transition:color 0.3s ease}
-    .service p{color:#C5D7FF}
-    .service:hover h3{color:var(--primary)}
+    .tagline {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      color: var(--accent3);
+      animation: blink 2s infinite;
+    }
 
-    /* Work */
-    .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px}
-    .tool-btn{padding:.45rem .8rem; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(11,22,48,.55); cursor:pointer; font-weight:600; transition:all 0.3s ease}
-    .tool-btn:hover{background:rgba(59,161,255,0.2); transform:scale(1.05)}
-    .tool-btn[aria-pressed="true"]{background:linear-gradient(135deg, rgba(59,161,255,.25), rgba(124,196,255,.18)); border-color:rgba(124,196,255,.35); transform:scale(1.05)}
-    .work-card{position:relative; overflow:hidden; opacity:0; transform:translateY(20px)}
-    .work-card.animated{animation:slideUp 0.6s forwards}
-    .work-card .thumb{aspect-ratio:16/10; border-radius:14px; border:1px solid rgba(255,255,255,.09); background:linear-gradient(180deg, #102147, #0B1630); display:grid; place-items:center; transition:transform 0.3s ease}
-    .work-card:hover .thumb{transform:scale(1.03)}
-    .work-card .meta{display:flex; align-items:center; justify-content:space-between; margin-top:10px}
-    .badge{font-size:.78rem; color:#A9C6FF; border:1px solid rgba(124,196,255,.16); padding:.2rem .5rem; border-radius:6px; transition:all 0.3s ease}
-    .badge:hover{background:rgba(59,161,255,0.1); border-color:var(--primary)}
+    @keyframes blink {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
 
-    /* Process */
-    .process{position:relative}
-    .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:16px}
-    .step{position:relative; padding:18px; border-radius:14px; opacity:0; transform:translateY(20px)}
-    .step.animated{animation:slideUp 0.6s forwards}
-    .step .num{font-weight:800; font-size:1.2rem; color:var(--primary); transition:transform 0.3s ease}
-    .step:hover .num{transform:scale(1.1)}
-    .step .arr{position:absolute; top:50%; right:-10px; transform:translateY(-50%); opacity:0.7; transition:opacity 0.3s ease, transform 0.3s ease}
-    .step:hover .arr{opacity:1; transform:translateY(-50%) scale(1.1)}
-    .step:last-child .arr{display:none}
+    /* Navigation */
+    .nav-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      position: relative;
+      z-index: 10;
+    }
 
-    /* Tech marquee & stats */
-    .marquee{overflow:hidden; border-radius:14px; border:1px solid rgba(255,255,255,.08); position:relative; overflow:hidden}
-    .marquee::before{content:''; position:absolute; left:0; top:0; width:50px; height:100%; background:linear-gradient(to right, var(--bg-0), transparent); z-index:2}
-    .marquee::after{content:''; position:absolute; right:0; top:0; width:50px; height:100%; background:linear-gradient(to left, var(--bg-0), transparent); z-index:2}
-    .marquee-track{display:flex; gap:32px; padding:16px 20px; animation:scroll 22s linear infinite}
-    .tech{display:inline-flex; gap:10px; align-items:center; background:rgba(12,24,54,.7); border:1px solid rgba(255,255,255,.08); padding:.55rem .8rem; border-radius:999px; transition:transform 0.3s ease}
-    .tech:hover{transform:scale(1.05); background:rgba(59,161,255,0.15)}
-    @keyframes scroll{to{transform:translateX(-50%)}}
-    .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
-    .stat-card{padding:18px; border-radius:14px; text-align:center; transition:transform 0.3s ease}
-    .stat-card:hover{transform:scale(1.05)}
-    .stat-card .num{font-size:2rem; font-weight:900; background:linear-gradient(180deg, var(--primary), var(--primary-2)); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .nav-pills {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50px;
+      padding: 8px;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+    }
 
-    /* Testimonials */
-    .testimonial{display:none; flex-direction:column; gap:10px; opacity:0; transform:translateY(20px)}
-    .testimonial.active{display:flex; animation:fadeInUp 0.8s forwards}
-    .dots{display:flex; gap:6px; justify-content:center; margin-top:8px}
-    .dot{width:8px; height:8px; border-radius:50%; background:#2C3D68; border:1px solid rgba(124,196,255,.28); cursor:pointer; transition:all 0.3s ease}
-    .dot:hover{background:var(--primary); transform:scale(1.2)}
-    .dot.active{background:var(--primary); transform:scale(1.3)}
+    .nav-item {
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 500;
+      border-radius: 30px;
+      transition: all 0.3s ease;
+      position: relative;
+      font-size: 0.95rem;
+    }
 
-    /* Contact */
-    form{display:grid; gap:12px}
-    input, textarea, select{background:rgba(12,24,54,.65); border:1px solid rgba(124,196,255,.18); color:var(--text); padding:12px 14px; border-radius:12px; outline:none; transition:border 0.3s ease, transform 0.3s ease}
-    input:focus, textarea:focus{border-color:var(--primary); transform:scale(1.02); box-shadow:0 0 0 3px rgba(59,161,255,0.1)}
-    textarea{min-height:140px; resize:vertical}
-    .form-row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    #formMsg{padding:8px; border-radius:8px; margin-top:12px; opacity:0; transition:opacity 0.3s ease}
+    .nav-item:hover {
+      color: var(--primary);
+      background: rgba(0, 231, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .nav-item.active {
+      color: white;
+      background: var(--primary);
+      box-shadow: var(--glow-primary);
+      font-weight: 600;
+    }
+
+    /* Main Content */
+    .presentation {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .slide {
+      display: none;
+      opacity: 0;
+      animation: fadeInUp 1s ease-out forwards;
+      padding: 3rem;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-light);
+      backdrop-filter: blur(10px);
+      min-height: 500px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .slide-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      text-shadow: var(--glow-primary);
+    }
+
+    .emoji {
+      font-size: 1.6rem;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .text-content {
+      font-size: 1.15rem;
+      line-height: 1.8;
+    }
+
+    .text-content p {
+      margin-bottom: 1.2rem;
+    }
+
+    .highlight {
+      background: linear-gradient(90deg, transparent, rgba(0, 231, 255, 0.2), transparent);
+      padding: 0.2rem 0.6rem;
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--accent2);
+    }
+
+    .visual-area {
+      background: rgba(10, 10, 25, 0.6);
+      border-radius: 15px;
+      padding: 1.5rem;
+      border: 1px dashed rgba(0, 231, 255, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      position: relative;
+    }
+
+    .diagram {
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      filter: drop-shadow(var(--glow-primary));
+      transition: transform 0.3s ease;
+    }
+
+    .diagram:hover {
+      transform: scale(1.05);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 0.3rem 0.4rem;
+      border: 1px solid transparent;
+    }
+
+    .badge-primary { background: rgba(0, 231, 255, 0.15); color: var(--primary); border-color: var(--primary); }
+    .badge-secondary { background: rgba(255, 38, 138, 0.15); color: var(--secondary); border-color: var(--secondary); }
+    .badge-accent1 { background: rgba(185, 108, 255, 0.15); color: var(--accent1); border-color: var(--accent1); }
+    .badge-accent3 { background: rgba(0, 255, 136, 0.15); color: var(--accent3); border-color: var(--accent3); }
+
+    .list {
+      list-style: none;
+      margin: 1.5rem 0;
+    }
+
+    .list li {
+      margin-bottom: 1rem;
+      padding-left: 2.5rem;
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .list li::before {
+      content: "▶";
+      color: var(--accent2);
+      position: absolute;
+      left: 0;
+      top: 0.1rem;
+      font-size: 0.8rem;
+    }
+
+    .code-block {
+      background: rgba(0, 10, 20, 0.8);
+      border-left: 4px solid var(--accent1);
+      padding: 1.2rem;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+      margin: 1.8rem 0;
+      font-size: 0.95rem;
+      color: #a0f0ff;
+      line-height: 1.6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.8rem 0;
+      background: rgba(40, 40, 60, 0.4);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+    }
+
+    th {
+      background: var(--accent1);
+      color: white;
+      padding: 1.1rem;
+      text-align: left;
+    }
+
+    td {
+      padding: 1rem 1.1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 0.8rem 2rem;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 2px solid var(--primary);
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      background: var(--primary);
+      color: var(--darker-bg);
+      box-shadow: var(--glow-primary);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary);
+      color: var(--darker-bg);
+    }
 
     /* Footer */
-    footer{padding:40px 0 60px; border-top:1px solid rgba(255,255,255,.06); background:linear-gradient(180deg, rgba(10,20,46,.0), rgba(10,20,46,.45))}
-    .foot{display:grid; grid-template-columns:1.2fr .8fr; gap:20px; align-items:center}
-    .fine{color:#9DB3E6; font-size:.9rem}
-    .social{display:flex; gap:10px}
-    .social a{display:grid; place-items:center; width:38px; height:38px; border-radius:10px; border:1px solid rgba(124,196,255,.18); background:rgba(12,24,54,.7); transition:all 0.3s ease}
-    .social a:hover{background:var(--primary); color:#001026; transform:scale(1.1); border-color:var(--primary)}
-
-    /* Background Canvas & Orbs */
-    #bg-canvas{position:fixed; inset:0; z-index:-1}
-    .orb{position:absolute; width:12px; height:12px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #9ED6FF, #3BA1FF 60%, rgba(59,161,255,0) 70%); filter:blur(.2px); opacity:.75; animation:float 8s ease-in-out infinite}
-    .orb::after{content:''; position:absolute; top:-50%; left:-50%; right:-50%; bottom:-50%; border-radius:50%; background:radial-gradient(circle, rgba(158,214,255,0.3), transparent 70%); animation:glowPulse 3s infinite alternate}
-
-    /* Animations */
-    @keyframes gemFloat{ 50%{ transform:translateY(-10px) rotate(8deg)} }
-    @keyframes float{ 50%{ transform:translateY(-12px) } }
-    @keyframes slideUp{from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)}}
-    @keyframes slideInRight{from{opacity:0; transform:translateX(30px)} to{opacity:1; transform:translateX(0)}}
-    @keyframes fadeInUp{from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)}}
-    @keyframes pulse{0%{opacity:0.7} 50%{opacity:1; transform:scale(1.1)} 100%{opacity:0.7}}
-    @keyframes glow{0%{box-shadow:0 0 5px var(--accent)} 100%{box-shadow:0 0 20px var(--accent)}}
-    @keyframes gradientShift{0%{background-position:0% 50%} 100%{background-position:100% 50%}}
-    @keyframes rotate{from{transform:rotate(0deg)} to{transform:rotate(360deg)}}
-    @keyframes bounce{0%, 20%, 50%, 80%, 100%{transform:translateY(0)} 40%{transform:translateY(-10px)} 60%{transform:translateY(-5px)}}
-    @keyframes glowPulse{0%{opacity:0.5} 100%{opacity:1}}
-
-    /* Parallax stars */
-    .star{position:absolute; background:#fff; border-radius:50%; opacity:0.8; animation:twinkle 4s infinite}
-    .star.small{width:1px; height:1px}
-    .star.medium{width:2px; height:2px; opacity:0.6}
-    .star.large{width:3px; height:3px; opacity:0.8; box-shadow:0 0 4px #fff}
-
-    /* Responsive */
-    @media (max-width: 1120px){
-      .hero-grid{grid-template-columns:1fr; gap:28px}
-      .hero{padding-top:100px}
-      .section{padding:70px 0}
+    footer {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+      z-index: 10;
+      position: relative;
+      margin-top: 2rem;
     }
-    @media (max-width: 960px){
-      .steps{grid-template-columns:1fr 1fr}
-      .grid-4{grid-template-columns:repeat(2,1fr)}
-      .stats{grid-template-columns:repeat(2,1fr)}
-      .foot{grid-template-columns:1fr}
-      nav ul{display:none}
-      .mobile-toggle{display:inline-grid; place-items:center; width:38px; height:38px; border-radius:10px; border:1px solid rgba(124,196,255,.18); background:rgba(12,24,54,.7)}
-      .mobile-menu{display:none; position:absolute; top:60px; right:4%; left:4%; padding:12px; border-radius:14px; background:var(--bg-0); border:1px solid rgba(255,255,255,.1)}
-      .mobile-menu.open{display:grid; grid-template-columns:1fr; gap:8px}
-      .hero-visual{padding:14px}
-      .logo-slab{height:200px}
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      margin: 1rem auto;
+      width: 80%;
+      overflow: hidden;
     }
-    @media (max-width: 560px){
-      .grid-3{grid-template-columns:1fr}
-      .grid-4{grid-template-columns:1fr}
-      .steps{grid-template-columns:1fr}
-      .form-row{grid-template-columns:1fr}
-      .stat-badges{gap:10px}
-      .showreel{aspect-ratio:4/3}
-      .container{width:94%}
-      .hero{padding:100px 0 80px}
-      .section{padding:60px 0}
+
+    .progress-fill {
+      height: 100%;
+      width: 12.5%;
+      background: var(--primary);
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    /* Animated Elements */
+    .floating {
+      animation: floating 6s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .pulse-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: var(--accent3);
+      border-radius: 50%;
+      margin-left: 8px;
+      animation: pulseDot 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(0.8); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* Custom Shapes */
+    .shape {
+      position: absolute;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    .shape-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .shape-triangle {
+      width: 0;
+      height: 0;
+      border-left: 40px solid transparent;
+      border-right: 40px solid transparent;
+      border-bottom: 70px solid var(--secondary);
+    }
+
+    .top-right {
+      top: 20%;
+      right: 10%;
+    }
+
+    .bottom-left {
+      bottom: 20%;
+      left: 10%;
+      transform: rotate(30deg);
     }
   </style>
 </head>
 <body>
-  <canvas id="bg-canvas" aria-hidden="true"></canvas>
-  
-  <!-- Floating decorative orbs -->
-  <div class="orb" style="left:6%; top:24%; animation-delay:.2s"></div>
-  <div class="orb" style="left:78%; top:18%; width:16px; height:16px; animation-delay:1.1s"></div>
-  <div class="orb" style="left:88%; top:68%; width:10px; height:10px; animation-delay:.6s"></div>
+  <!-- Animated Background Glows -->
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+  <div class="glow glow-4"></div>
 
-  <!-- Stars -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const canvas = document.getElementById('bg-canvas');
-      const ctx = canvas.getContext('2d');
-      let width, height;
-      
-      function resizeCanvas() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-      }
-      
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
-      
-      const stars = [];
-      const starCount = 150;
-      
-      // Create stars
-      for (let i = 0; i < starCount; i++) {
-        stars.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          radius: Math.random() * 1.5 + 0.5,
-          opacity: Math.random() * 0.8 + 0.2,
-          speed: Math.random() * 0.05 + 0.01
-        });
-      }
-      
-      // Animation loop
-      function animate() {
-        ctx.clearRect(0, 0, width, height);
-        
-        // Draw stars
-        stars.forEach(star => {
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
-          ctx.fill();
-          
-          // Move stars slowly
-          star.y += star.speed;
-          
-          // Reset if out of bounds
-          if (star.y > height) {
-            star.y = 0;
-            star.x = Math.random() * width;
-          }
-        });
-        
-        requestAnimationFrame(animate);
-      }
-      
-      animate();
-    });
-  </script>
+  <!-- Decorative Shapes -->
+  <div class="shape shape-circle top-right"></div>
+  <div class="shape shape-triangle bottom-left"></div>
 
+  <!-- Header -->
   <header>
-    <div class="container nav">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <a href="#top" aria-label="Abyssinia Digital Creators home">Abyssinia <span style="opacity:.65">Digital Creators</span></a>
-      </div>
-      <nav>
-        <ul aria-label="Primary">
-          <li><a href="#services">Services</a></li>
-          <li><a href="#work">Work</a></li>
-          <li><a href="#process">Process</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-      <div class="nav-cta">
-        <a class="btn btn-ghost" href="#contact">Get Quote</a>
-        <button class="mobile-toggle" aria-label="Open menu" id="menuBtn">≡</button>
-      </div>
-    </div>
-    <div class="container mobile-menu glass" id="mobileMenu">
-      <a href="#services">Services</a>
-      <a href="#work">Work</a>
-      <a href="#process">Process</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </div>
+    <h1>The Neural Ninja 🌿</h1>
+    <p class="subtitle">Mastering Unsupervised Learning & DBSCAN Clustering</p>
+    <p class="tagline">Data Sensei Mode: Activated <span class="pulse-dot"></span></p>
   </header>
 
-  <main id="top">
-    <!-- HERO -->
-    <section class="hero container">
-      <div class="hero-grid">
-        <div>
-          <div class="eyebrow fade-in"><span class="dot"></span> We craft advanced web experiences</div>
-          <h1 class="title" id="animatedTitle">Abyssinia Digital <span class="gradient">Creators</span></h1>
-          <p class="sub" id="animatedSub">We design and build fast, modern, secure websites and apps for startups, NGOs, and enterprises. From Ethiopia to the globe — pixel-perfect UI, robust code, measurable results.</p>
-          <div class="hero-cta" id="animatedCta">
-            <a class="btn btn-primary" href="#contact">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" stroke="#001026" stroke-width="2" stroke-linecap="round"/></svg>
-              Start a Project
-            </a>
-            <a class="btn btn-ghost" href="#work">See our Work</a>
-          </div>
-          <div class="stat-badges" id="animatedStats">
-            <div class="stat"><b id="stat-projects">0</b><div>Projects delivered</div></div>
-            <div class="stat"><b id="stat-rating">0.0★</b><div>Avg. client rating</div></div>
-            <div class="stat"><b id="stat-speed">0ms</b><div>Core Web Vitals</div></div>
-          </div>
-        </div>
-
-        <!-- Hero visual -->
-        <div class="hero-visual" id="animatedVisual">
-          <div class="hero-badge">Live Demo UI</div>
-          <div class="logo-slab">
-            <div class="logo-gem" aria-hidden="true"></div>
-            <div class="spark s1"></div>
-            <div class="spark s2"></div>
-            <div class="spark s3"></div>
-          </div>
-          <div class="showreel">
-            <button class="play" aria-label="Play Showreel">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7-11-7z" stroke="#CFE6FF" stroke-width="2" stroke-linejoin="round"/></svg>
-              18s Motion Preview
-            </button>
-          </div>
-          <div class="scroll-arrow" style="text-align:center; margin-top:14px; opacity:.85">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m0 0l-6-6m6 6l-6-6" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg>
-            <div class="fine">Scroll</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SERVICES -->
-    <section id="services" class="section">
-      <div class="container">
-        <div class="chip">Our Services</div>
-        <h2>Strategy, Design, Development — end-to-end</h2>
-        <p class="lead">We help brands launch quickly and scale with confidence.</p>
-        <div class="grid grid-4" id="servicesGrid">
-          <article class="card service">
-            <div class="halo"></div>
-            <div class="icon">💡</div>
-            <h3>Product Strategy</h3>
-            <p>Discovery, user research, KPI mapping, roadmaps, and analytics foundations.</p>
-          </article>
-          <article class="card service">
-            <div class="halo"></div>
-            <div class="icon">🎨</div>
-            <h3>UI/UX & Brand</h3>
-            <p>Design systems, prototypes, design tokens, and accessible interfaces.</p>
-          </article>
-          <article class="card service">
-            <div class="halo"></div>
-            <div class="icon">🧩</div>
-            <h3>Web Development</h3>
-            <p>SPA/SSR, APIs, headless CMS, e-commerce, and enterprise dashboards.</p>
-          </article>
-          <article class="card service">
-            <div class="halo"></div>
-            <div class="icon">🚀</div>
-            <h3>Optimization</h3>
-            <p>Performance, SEO, security hardening, CI/CD, and Core Web Vitals.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- WORK -->
-    <section id="work" class="section">
-      <div class="container">
-        <div class="chip">Selected Work</div>
-        <h2>Showcase</h2>
-        <div class="toolbar">
-          <button class="tool-btn" aria-pressed="true" data-filter="all">All</button>
-          <button class="tool-btn" data-filter="web">Web Apps</button>
-          <button class="tool-btn" data-filter="site">Marketing Sites</button>
-          <button class="tool-btn" data-filter="shop">E-commerce</button>
-          <button class="tool-btn" data-filter="dash">Dashboards</button>
-        </div>
-        <div class="grid grid-3" id="workGrid">
-          <article class="work-card card" data-tags="web dash">
-            <div class="thumb"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h16" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg></div>
-            <div class="meta"><div>Fintech Dashboard</div><span class="badge">React / Node</span></div>
-          </article>
-          <article class="work-card card" data-tags="site">
-            <div class="thumb"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h10" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg></div>
-            <div class="meta"><div>NGO Landing</div><span class="badge">Next.js / CMS</span></div>
-          </article>
-          <article class="work-card card" data-tags="shop">
-            <div class="thumb"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M6 7h12l-1 10H7L6 7z M9 7a3 3 0 006 0" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg></div>
-            <div class="meta"><div>Online Store</div><span class="badge">Shopify / Headless</span></div>
-          </article>
-          <article class="work-card card" data-tags="web">
-            <div class="thumb"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M5 5h14v10H5z M9 19h6" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg></div>
-            <div class="meta"><div>Healthcare Portal</div><span class="badge">Vue / Firebase</span></div>
-          </article>
-          <article class="work-card card" data-tags="dash web">
-            <div class="thumb"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M4 13h7V6H4v7zm9 5h7v-5h-7v5z" stroke="#7CC4FF" stroke-width="2"/></svg></div>
-            <div class="meta"><div>Analytics Suite</div><span class="badge">Svelte / D3</span></div>
-          </article>
-          <article class="work-card card" data-tags="site">
-            <div class="thumb"><svg width="64" height="64" viewBox="0 0 24 24" fill="none"><path d="M3 8h18M7 12h10M9 16h6" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg></div>
-            <div class="meta"><div>University Microsite</div><span class="badge">Astro / MDX</span></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- PROCESS -->
-    <section id="process" class="section">
-      <div class="container process">
-        <div class="chip">How we work</div>
-        <h2>Lean, transparent, and collaborative</h2>
-        <div class="steps" id="processSteps">
-          <div class="card step">
-            <div class="num">01</div>
-            <h3>Discover</h3>
-            <p>Workshop goals, users, and constraints. Define success metrics.</p>
-            <div class="arr"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg></div>
-          </div>
-          <div class="card step">
-            <div class="num">02</div>
-            <h3>Design</h3>
-            <p>Create flows, wireframes, and high-fidelity UI with motion prototypes.</p>
-            <div class="arr"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg></div>
-          </div>
-          <div class="card step">
-            <div class="num">03</div>
-            <h3>Develop</h3>
-            <p>Build accessible, performant code with CI/CD and QA across devices.</p>
-            <div class="arr"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="#7CC4FF" stroke-width="2" stroke-linecap="round"/></svg></div>
-          </div>
-          <div class="card step">
-            <div class="num">04</div>
-            <h3>Deploy & Grow</h3>
-            <p>Launch, measure, iterate. Support, training, and roadmap delivery.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- TECH & STATS -->
-    <section class="section">
-      <div class="container">
-        <div class="grid grid-3">
-          <div class="card">
-            <div class="marquee">
-              <div class="marquee-track" aria-hidden="true">
-                <span class="tech">⚛️ React</span>
-                <span class="tech">▲ Next.js</span>
-                <span class="tech">🧰 Node/Express</span>
-                <span class="tech">📦 MongoDB</span>
-                <span class="tech">🐘 PostgreSQL</span>
-                <span class="tech">☁️ Cloudflare</span>
-                <span class="tech">🔒 Auth</span>
-                <span class="tech">🛒 Shopify</span>
-                <span class="tech">🔍 SEO</span>
-                <span class="tech">⚛️ React</span>
-                <span class="tech">▲ Next.js</span>
-                <span class="tech">🧰 Node/Express</span>
-                <span class="tech">📦 MongoDB</span>
-                <span class="tech">🐘 PostgreSQL</span>
-                <span class="tech">☁️ Cloudflare</span>
-                <span class="tech">🔒 Auth</span>
-                <span class="tech">🛒 Shopify</span>
-                <span class="tech">🔍 SEO</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card stats">
-            <div class="stat-card glass">
-              <div class="num" data-count="48">0</div>
-              <div>Web projects</div>
-            </div>
-            <div class="stat-card glass">
-              <div class="num" data-count="12">0</div>
-              <div>Industries</div>
-            </div>
-            <div class="stat-card glass">
-              <div class="num" data-count="99">0</div>
-              <div>Core Web Vitals</div>
-            </div>
-            <div class="stat-card glass">
-              <div class="num" data-count="24">0</div>
-              <div>Ongoing clients</div>
-            </div>
-          </div>
-
-          <div class="card" style="padding:18px">
-            <h3 style="margin:0 0 8px">Testimonials</h3>
-            <div id="testimonials">
-              <div class="testimonial active">
-                <p>“ADC turned our idea into a beautiful app in 6 weeks. Performance is unreal.”</p>
-                <div class="fine">— Selam, HealthTech PM</div>
-              </div>
-              <div class="testimonial">
-                <p>“Clear process, strong communication, and quality code. We launched on time.”</p>
-                <div class="fine">— Dawit, Fintech Founder</div>
-              </div>
-              <div class="testimonial">
-                <p>“Our NGO site now loads in <b><1s</b> on mobile. Donations up 32%.”</p>
-                <div class="fine">— Hana, Comms Lead</div>
-              </div>
-            </div>
-            <div class="dots" aria-label="Testimonials pagination">
-              <button class="dot active" data-slide="0" aria-label="Slide 1"></button>
-              <button class="dot" data-slide="1" aria-label="Slide 2"></button>
-              <button class="dot" data-slide="2" aria-label="Slide 3"></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section id="about" class="section">
-      <div class="container">
-        <div class="chip">Who we are</div>
-        <h2>Design-first engineers based in Ethiopia</h2>
-        <p class="lead">We are a tight team of designers and full-stack engineers serving Addis Ababa and international clients. We love a tough brief and clean code.</p>
-        <div class="grid grid-3">
-          <div class="card" style="padding:16px">
-            <h3>Principles</h3>
-            <ul>
-              <li>Accessibility and inclusivity by default</li>
-              <li>Motion that supports meaning</li>
-              <li>Performance as a feature</li>
-            </ul>
-          </div>
-          <div class="card" style="padding:16px">
-            <h3>Capabilities</h3>
-            <ul>
-              <li>Design systems & prototyping</li>
-              <li>Web apps, CMS, e-commerce</li>
-              <li>Integrations & automation</li>
-            </ul>
-          </div>
-          <div class="card" style="padding:16px">
-            <h3>Edge we bring</h3>
-            <ul>
-              <li>SEO + Core Web Vitals expertise</li>
-              <li>Security and reliability</li>
-              <li>Clear docs & training</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact" class="section">
-      <div class="container">
-        <div class="chip">Contact</div>
-        <h2>Let’s build something great</h2>
-        <p class="lead">Tell us a bit about your project. We’ll reply within 24 hours.</p>
-        <form class="card" id="contactForm" style="padding:16px">
-          <div class="form-row">
-            <input required name="name" placeholder="Your name" aria-label="Your name" />
-            <input required type="email" name="email" placeholder="Email address" aria-label="Email" />
-          </div>
-          <div class="form-row">
-            <select name="budget" aria-label="Budget">
-              <option value="" hidden>Budget range</option>
-              <option>$1k – $3k</option>
-              <option>$3k – $8k</option>
-              <option>$8k – $20k</option>
-              <option>$20k+</option>
-            </select>
-            <input name="company" placeholder="Company (optional)" aria-label="Company" />
-          </div>
-          <textarea required name="message" placeholder="Project goals, timeline, links…" aria-label="Message"></textarea>
-          <div style="display:flex; gap:10px; align-items:center; justify-content:space-between">
-            <label style="display:flex; gap:8px; align-items:center; font-size:.9rem"><input type="checkbox" required/> I agree to the privacy policy</label>
-            <button class="btn btn-primary" type="submit">Send Request</button>
-          </div>
-          <div id="formMsg" class="fine" role="status" aria-live="polite" style="margin-top:8px"></div>
-        </form>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container foot">
-      <div class="fine">© <span id="year"></span> Abyssinia Digital Creators — Built with love in Addis Ababa. All rights reserved.</div>
-      <div class="social">
-        <a href="#" aria-label="Twitter">✦</a>
-        <a href="#" aria-label="GitHub">◇</a>
-        <a href="#" aria-label="LinkedIn">⬡</a>
-      </div>
+  <!-- Navigation -->
+  <div class="nav-container">
+    <div class="nav-pills">
+      <div class="nav-item active" data-slide="intro">Intro</div>
+      <div class="nav-item" data-slide="unsupervised">Unsupervised</div>
+      <div class="nav-item" data-slide="clustering">Clustering</div>
+      <div class="nav-item" data-slide="dbscan-intro">DBSCAN Intro</div>
+      <div class="nav-item" data-slide="how-it-works">How It Works</div>
+      <div class="nav-item" data-slide="core-points">Core Points</div>
+      <div class="nav-item" data-slide="advantages">Advantages</div>
+      <div class="nav-item" data-slide="real-world">Real World</div>
     </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress"></div>
+  </div>
+
+  <!-- Presentation Slides -->
+  <div class="presentation">
+    <!-- Slide 1: Introduction -->
+    <section id="intro" class="slide active">
+      <h2 class="slide-title"><span class="emoji">🎯</span> Welcome</h2>
+      <div class="content-grid">
+        <div class="text-content">
+          <p>Today, we're diving into the <span class="highlight">mysterious world of unsupervised learning</span> – where data reveals its own secrets without labels or guidance.</p>
+          
+          <p>We'll journey from the basics of clustering to mastering <span class="badge badge-primary">DBSCAN</span>, one of the most powerful and intuitive clustering algorithms in machine learning.</p>
+          
+          <p>By the end, you'll understand:</p>
+          <ul class="list">
+            <li>What makes unsupervised learning special</li>
+            <li>How clustering finds hidden patterns</li>
+            <li>Why DBSCAN is a ninja among algorithms</li>
+            <li>How to apply it to real-world problems</li>
+          </ul>
+          
+          <p>Ready to become a <span class="highlight">Neural Ninja</span> of data?</p>
+        </div>
+        <div class="visual-area">
+          <img src="https://cdn-icons-png.flaticon.com/512/2103/2103652.png" alt="Ninja Data" class="diagram floating" style="filter: invert(80%) sepia(20%) saturate(300%) hue-rotate(170deg);"/>
+          <p style="text-align: center; margin-top: 1.5rem; color: var(--accent2); font-style: italic;">The path of the data ninja begins...</p>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="nextSlide()">Begin Journey →</button>
+      </div>
+    </section>
+
+    <!-- Slide 2: Unsupervised Learning -->
+    <section id="unsupervised" class="slide">
+      <h2 class="slide-title"><span class="emoji">🔍</span> What is Unsupervised Learning?</h2>
+      <div class="content-grid">
+        <div class="text-content">
+          <p>Imagine being given a box of LEGO pieces with <span class="highlight">no instruction manual</span>. You have to figure out how they fit together by spotting patterns.</p>
+          
+          <p>That's unsupervised learning! It finds hidden structures in data <span class="highlight">without labeled examples</span>.</p>
+          
+          <ul class="list">
+            <li><strong>No teacher</strong>: No "correct answers" provided</li>
+            <li><strong>Discovery</strong>: Finds patterns humans might miss</li>
+            <li><strong>Exploration</strong>: Lets data speak for itself</li>
+            <li><strong>Common tasks</strong>: Clustering, dimensionality reduction, anomaly detection</li>
+          </ul>
+          
+          <p class="highlight">Supervised vs Unsupervised</p>
+          <p>Supervised is like learning with flashcards (input → output). Unsupervised is like exploring a new city with no map – you discover neighborhoods on your own.</p>
+        </div>
+        <div class="visual-area">
+          <svg class="diagram" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+            <!-- Unsupervised Side -->
+            <rect x="10" y="20" width="120" height="150" fill="rgba(185, 108, 255, 0.2)" stroke="#b96cff" stroke-width="2"/>
+            <text x="20" y="45" fill="#b96cff" font-size="14" font-family="Arial">UNSUPERVISED</text>
+            <circle cx="70" cy="80" r="8" fill="#00e7ff"/>
+            <circle cx="90" cy="90" r="8" fill="#00e7ff"/>
+            <circle cx="60" cy="100" r="8" fill="#00e7ff"/>
+            <circle cx="80" cy="110" r="8" fill="#00e7ff"/>
+            <circle cx="100" cy="120" r="8" fill="#ff268a"/>
+            <circle cx="70" cy="130" r="8" fill="#ff268a"/>
+            <circle cx="90" cy="140" r="8" fill="#ff268a"/>
+            
+            <!-- Supervised Side -->
+            <rect x="170" y="20" width="120" height="150" fill="rgba(255, 38, 138, 0.2)" stroke="#ff268a" stroke-width="2"/>
+            <text x="180" y="45" fill="#ff268a" font-size="14" font-family="Arial">SUPERVISED</text>
+            <g transform="translate(230,80)">
+              <circle cx="0" cy="0" r="10" fill="#00ff88"/>
+              <text x="15" y="5" fill="#00ff88" font-size="12">✓</text>
+            </g>
+            <g transform="translate(230,110)">
+              <circle cx="0" cy="0" r="10" fill="#ffcc00"/>
+              <text x="15" y="5" fill="#ffcc00" font-size="12">?</text>
+            </g>
+            <line x1="230" y1="90" x2="230" y2="100" stroke="#00ff88" stroke-width="3" stroke-dasharray="4,4"/>
+          </svg>
+          <p style="text-align: center; margin-top: 1rem;">Left: Finding patterns | Right: Labeling known patterns</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Clustering -->
+    <section id="clustering" class="slide">
+      <h2 class="slide-title"><span class="emoji">🧩</span> What is Clustering?</h2>
+      <div class="content-grid">
+        <div class="text-content">
+          <p>Clustering is the art of <span class="highlight">grouping similar items together</span> based on their features, like sorting fruits by color, size, and taste.</p>
+          
+          <p>It answers: "Who belongs with whom?" without being told the categories in advance.</p>
+          
+          <ul class="list">
+            <li><strong>Natural grouping</strong>: Finds inherent structures in data</li>
+            <li><strong>Similarity-based</strong>: Close points = same group</li>
+            <li><strong>Applications everywhere</strong>: Customer segmentation, image recognition, anomaly detection</li>
+          </ul>
+          
+          <p class="highlight">Real-life Analogy</p>
+          <p>Think of a party: people naturally cluster by interests. Music lovers gather near speakers, foodies hover around the buffet, and introverts might form smaller groups in corners.</p>
+          
+          <p>Clustering algorithms do this automatically with data points!</p>
+        </div>
+        <div class="visual-area">
+          <svg class="diagram" viewBox="0 0 300 250" xmlns="http://www.w3.org/2000/svg">
+            <!-- Cluster 1 -->
+            <path d="M 50 50 
+                     Q 80 30, 110 50 
+                     Q 130 80, 110 110 
+                     Q 80 130, 50 110 
+                     Q 30 80, 50 50 Z" 
+                  fill="none" stroke="#00e7ff" stroke-width="3" stroke-dasharray="6,4"/>
+            <circle cx="60" cy="60" r="6" fill="#00e7ff"/>
+            <circle cx="80" cy="50" r="6" fill="#00e7ff"/>
+            <circle cx="100" cy="65" r="6" fill="#00e7ff"/>
+            <circle cx="90" cy="85" r="6" fill="#00e7ff"/>
+            <circle cx="70" cy="90" r="6" fill="#00e7ff"/>
+            <text x="45" y="45" fill="#00e7ff" font-size="14">Group A</text>
+            
+            <!-- Cluster 2 -->
+            <path d="M 180 40 
+                     Q 210 30, 240 50 
+                     Q 250 80, 230 100 
+                     Q 200 110, 180 80 
+                     Q 170 60, 180 40 Z" 
+                  fill="none" stroke="#ff268a" stroke-width="3" stroke-dasharray="6,4"/>
+            <circle cx="190" cy="50" r="6" fill="#ff268a"/>
+            <circle cx="210" cy="45" r="6" fill="#ff268a"/>
+            <circle cx="225" cy="60" r="6" fill="#ff268a"/>
+            <circle cx="215" cy="80" r="6" fill="#ff268a"/>
+            <circle cx="195" cy="75" r="6" fill="#ff268a"/>
+            <text x="175" y="35" fill="#ff268a" font-size="14">Group B</text>
+            
+            <!-- Cluster 3 -->
+            <path d="M 160 150 
+                     Q 190 140, 220 155 
+                     Q 230 185, 210 205 
+                     Q 180 215, 160 190 
+                     Q 150 170, 160 150 Z" 
+                  fill="none" stroke="#b96cff" stroke-width="3" stroke-dasharray="6,4"/>
+            <circle cx="170" cy="160" r="6" fill="#b96cff"/>
+            <circle cx="190" cy="155" r="6" fill="#b96cff"/>
+            <circle cx="210" cy="170" r="6" fill="#b96cff"/>
+            <circle cx="200" cy="190" r="6" fill="#b96cff"/>
+            <circle cx="175" cy="185" r="6" fill="#b96cff"/>
+            <text x="155" y="145" fill="#b96cff" font-size="14">Group C</text>
+            
+            <!-- Lone point -->
+            <circle cx="120" cy="160" r="6" fill="#555"/>
+            <text x="125" y="155" fill="#555" font-size="12">Noise</text>
+          </svg>
+          <p style="text-align: center; margin-top: 1rem;">Three natural clusters emerging from data</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: DBSCAN Introduction -->
+    <section id="dbscan-intro" class="slide">
+      <h2 class="slide-title"><span class="emoji">🎯</span> Introducing DBSCAN</h2>
+      <div class="content-grid">
+        <div class="text-content">
+          <p><span class="badge badge-primary">DBSCAN</span> (Density-Based Spatial Clustering of Applications with Noise) is a powerful clustering algorithm that finds clusters based on <span class="highlight">density</span> rather than distance from a center.</p>
+          
+          <p>Unlike other methods, it:</p>
+          <ul class="list">
+            <li>Discovers clusters of <span class="highlight">any shape</span> (not just circles)</li>
+            <li>Automatically identifies and <span class="highlight">ignores noise</span> (outliers)</li>
+            <li>Doesn't require you to specify <span class="highlight">how many clusters</span> exist</li>
+            <li>Works by connecting <span class="highlight">dense regions</span> of points</li>
+          </ul>
+          
+          <p class="highlight">Why "Neural Ninja"?</p>
+          <p>Because DBSCAN moves through data like a ninja – silently, efficiently, and with precision, striking where the density is highest and ignoring distractions (noise).</p>
+        </div>
+        <div class="visual-area">
+          <img src="https://miro.medium.com/v2/resize:fit:1400/1*ZTmhBISZx7oSUdZ00DxFIg.png" alt="DBSCAN Clustering" class="diagram" style="border-radius: 10px;"/>
+          <p style="text-align: center; margin-top: 1rem; font-style: italic;">DBSCAN finds clusters of arbitrary shapes and handles noise</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: How It Works -->
+    <section id="how-it-works" class="slide">
+      <h2 class="slide-title"><span class="emoji">⚙️</span> How DBSCAN Works</h2>
+      <div class="content-grid">
+        <div class="text-content">
+          <p>DBSCAN has two key parameters:</p>
+          <ul class="list">
+            <li><strong>Epsilon (ε)</strong>: The maximum distance between points to be considered neighbors</li>
+            <li><strong>MinPts</strong>: Minimum number of points required to form a dense region</li>
+          </ul>
+          
+          <p>The algorithm works like a ninja scout:</p>
+          <ol class="list">
+            <li>Starts at any unvisited point</li>
+            <li>Checks if it has at least MinPts within ε distance</li>
+            <li>If yes, it's a <span class="highlight">core point</span> – start a new cluster!</li>
+            <li>Expands the cluster by adding all reachable points</li>
+            <li>Points with fewer than MinPts neighbors are <span class="highlight">border points</span> or <span class="highlight">noise</span></li>
+          </ol>
+          
+          <p class="highlight">Key Insight</p>
+          <p>Clusters are dense regions separated by areas of low point density. DBSCAN connects points in high-density areas while ignoring isolated points.</p>
+        </div>
+        <div class="visual-area">
+          <svg class="diagram" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Core point with epsilon circle -->
+            <circle cx="150" cy="150" r="80" fill="rgba(0, 231, 255, 0.1)" stroke="#00e7ff" stroke-width="2" stroke-dasharray="5,5"/>
+            <text x="150" y="65" fill="#00e7ff" font-size="14" text-anchor="middle">ε radius</text>
+            
+            <!-- Core point -->
+            <circle cx="150" cy="150" r="12" fill="#00e7ff" stroke="#00bfff" stroke-width="3"/>
+            <text x="150" y="155" fill="white" font-size="12" text-anchor="middle">Core</text>
+            
+            <!-- Border points -->
+            <circle cx="190" cy="130" r="8" fill="#ffcc00" stroke="#ffdd57" stroke-width="2"/>
+            <text x="190" y="125" fill="#ffdd57" font-size="12">Border</text>
+            
+            <circle cx="170" cy="180" r="8" fill="#ffcc00" stroke="#ffdd57" stroke-width="2"/>
+            <text x="170" y="175" fill="#ffdd57" font-size="12">Border</text>
+            
+            <circle cx="130" cy="170" r="8" fill="#ffcc00" stroke="#ffdd57" stroke-width="2"/>
+            <text x="130" y="165" fill="#ffdd57" font-size="12">Border</text>
+            
+            <!-- Other core points -->
+            <circle cx="180" cy="100" r="12" fill="#00e7ff" stroke="#00bfff" stroke-width="3"/>
+            <circle cx="120" cy="120" r="12" fill="#00e7ff" stroke="#00bfff" stroke-width="3"/>
+            
+            <!-- Noise points -->
+            <circle cx="230" cy="200" r="8" fill="#444" stroke="#666" stroke-width="2"/>
+            <text x="230" y="195" fill="#666" font-size="12">Noise</text>
+            
+            <circle cx="90" cy="200" r="8" fill="#444" stroke="#666" stroke-width="2"/>
+            <text x="90" y="195" fill="#666" font-size="12">Noise</text>
+            
+            <!-- Connection lines -->
+            <line x1="150" y1="150" x2="190" y2="130" stroke="#00e7ff" stroke-width="2" stroke-dasharray="4,3"/>
+            <line x1="150" y1="150" x2="170" y2="180" stroke="#00e7ff" stroke-width="2" stroke-dasharray="4,3"/>
+            <line x1="150" y1="150" x2="130" y2="170" stroke="#00e7ff" stroke-width="2" stroke-dasharray="4,3"/>
+          </svg>
+          <p style="text-align: center; margin-top: 1rem;">Core points (blue) connect border points (yellow) within ε radius</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Core Points and Types -->
+    <section id="core-points" class="slide">
+      <h2 class="slide-title"><span class="emoji">🔵🟡⚫</span> Three Types of Points</h2>
+      <div class="content-grid">
+        <div class="text-content">
+          <p>DBSCAN classifies every point into one of three categories:</p>
+          
+          <ul class="list">
+            <li>
+              <strong class="badge badge-primary">Core Point 🔵</strong>
+              <p>Has at least MinPts points within ε distance (including itself). These are the heart of clusters.</p>
+            </li>
+            <li>
+              <strong class="badge badge-accent3">Border Point 🟡</strong>
+              <p>Within ε distance of a core point but doesn't have enough neighbors to be a core point itself.</p>
+            </li>
+            <li>
+              <strong class="badge badge-secondary">Noise Point ⚫</strong>
+              <p>Not a core point and not near any core point. Considered outliers or anomalies.</p>
+            </li>
+          </ul>
+          
+          <p class="highlight">Cluster Definition</p>
+          <p>A cluster is a set of points that are <span class="highlight">density-reachable</span> from one another: you can travel from any point in the cluster to any other by stepping through core points within ε distance.</p>
+        </div>
+        <div class="visual-area">
+          <div style="display: flex; flex-direction: column; gap: 2rem; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="width: 30px; height: 30px; background: #00e7ff; border-radius: 50%; border: 3px solid #00bfff; display: flex; align-items: center; justify-content: center; font-weight: bold;">🔵</div>
+              <span>Core Point - Center of density</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="width: 30px; height: 30px; background: #ffcc00; border-radius: 50%; border: 3px solid #ffdd57; display: flex; align-items: center; justify-content: center; font-weight: bold;">🟡</div>
+              <span>Border Point - Edge of cluster</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="width: 30px; height: 30px; background: #444; border-radius: 50%; border: 3px solid #666; display: flex; align-items: center; justify-content: center; font-weight: bold;">⚫</div>
+              <span>Noise Point - Lone wanderer</span>
+            </div>
+          </div>
+          <div style="margin-top: 2rem; text-align: center;">
+            <img src="https://www.researchgate.net/profile/Mohamed-Hassan-446/publication/349356785/figure/fig3/AS:990934949920768@1613298277341/Types-of-points-in-DBSCAN-algorithm-core-border-and-noise-points.ppm" alt="DBSCAN Point Types" class="diagram" style="max-height: 150px; border-radius: 8px;"/>
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Visual representation of point types</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Advantages -->
+    <section id="advantages" class="slide">
+      <h2 class="slide-title"><span class="emoji">🌟</span> Why DBSCAN Rocks!</h2>
+      <div class="content-grid">
+        <div class="text-content">
+          <p>DBSCAN is a ninja among clustering algorithms. Here's why:</p>
+          
+          <ul class="list">
+            <li>
+              <strong>Any Shape Clusters</strong>
+              <p>Finds clusters in <span class="highlight">any shape</span> – circles, snakes, spirals, you name it! Unlike K-means which only finds round clusters.</p>
+            </li>
+            <li>
+              <strong>No Cluster Count Needed</strong>
+              <p>Discovers the <span class="highlight">natural number of clusters</span> in your data. No need to guess how many groups exist.</p>
+            </li>
+            <li>
+              <strong>Handles Noise Gracefully</strong>
+              <p>Automatically identifies and <span class="highlight">ignores outliers</span> as noise. Perfect for messy real-world data.</p>
+            </li>
+            <li>
+              <strong>Intuitive Parameters</strong>
+              <p>Epsilon and MinPts have <span class="highlight">clear physical meanings</span> – distance and minimum density.</p>
+            </li>
+          </ul>
+          
+          <p class="highlight">When to Use DBSCAN</p>
+          <p>Perfect for spatial data, anomaly detection, customer segmentation, and any situation where clusters have irregular shapes or noise is present.</p>
+        </div>
+        <div class="visual-area">
+          <svg class="diagram" viewBox="0 0 300 250" xmlns="http://www.w3.org/2000/svg">
+            <!-- Irregular shapes -->
+            <path d="M 50 50 
+                     Q 80 30, 110 50 
+                     Q 130 80, 110 110 
+                     Q 80 130, 50 110 
+                     Q 30 80, 50 50 Z" 
+                  fill="rgba(0, 231, 255, 0.3)" stroke="#00e7ff" stroke-width="3"/>
+            
+            <path d="M 180 40 
+                     Q 210 30, 240 50 
+                     Q 250 80, 230 100 
+                     Q 200 110, 180 80 
+                     Q 170 60, 180 40 Z" 
+                  fill="rgba(255, 38, 138, 0.3)" stroke="#ff268a" stroke-width="3"/>
+            
+            <path d="M 100 180 
+                     Q 150 160, 200 180 
+                     Q 220 210, 180 230 
+                     Q 140 240, 100 210 
+                     Q 80 190, 100 180 Z" 
+                  fill="rgba(185, 108, 255, 0.3)" stroke="#b96cff" stroke-width="3"/>
+            
+            <!-- Noise points -->
+            <circle cx="70" cy="150" r="5" fill="#444"/>
+            <circle cx="230" cy="170" r="5" fill="#444"/>
+            <circle cx="150" cy="200" r="5" fill="#444"/>
+            
+            <!-- Legend -->
+            <rect x="10" y="210" width="150" height="30" fill="rgba(0,0,0,0.5)" rx="8"/>
+            <text x="20" y="230" fill="var(--text-secondary)" font-size="12">Handles irregular shapes & noise</text>
+          </svg>
+          <p style="text-align: center; margin-top: 1rem;">DBSCAN finds clusters of any shape and ignores noise points</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: Real World Applications -->
+    <section id="real-world" class="slide">
+      <h2 class="slide-title"><span class="emoji">🌍</span> Real-World Ninja Missions</h2>
+      <div class="content-grid">
+        <div class="text-content">
+          <p>DBSCAN is used in countless real-world applications. Here are some exciting examples:</p>
+          
+          <ul class="list">
+            <li>
+              <strong>🗺️ Geographic Data</strong>
+              <p>Grouping GPS locations into meaningful areas like neighborhoods, popular spots, or traffic hotspots.</p>
+            </li>
+            <li>
+              <strong>🏥 Healthcare</strong>
+              <p>Identifying disease patterns from patient data or detecting anomalies in medical images.</p>
+            </li>
+            <li>
+              <strong>💳 Fraud Detection</strong>
+              <p>Finding unusual transaction patterns that might indicate credit card fraud.</p>
+            </li>
+            <li>
+              <strong>📸 Image Processing</strong>
+              <p>Segmenting images by color and texture density, or finding faces in photos.</p>
+            </li>
+            <li>
+              <strong>🌌 Astronomy</strong>
+              <p>Grouping stars into galaxies based on spatial density, ignoring random cosmic noise.</p>
+            </li>
+          </ul>
+          
+          <p class="highlight">Your Mission</p>
+          <p>Think about your data – are there natural groupings? Could outliers be important? DBSCAN might be your perfect ninja tool!</p>
+        </div>
+        <div class="visual-area">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
+            <div style="background: rgba(0, 231, 255, 0.1); padding: 1rem; border-radius: 10px; border: 1px solid rgba(0, 231, 255, 0.3);">
+              <h4 style="color: var(--primary); margin-bottom: 0.5rem;">City Map</h4>
+              <p style="font-size: 0.9rem;">Clusters show dense urban areas</p>
+            </div>
+            <div style="background: rgba(255, 38, 138, 0.1); padding: 1rem; border-radius: 10px; border: 1px solid rgba(255, 38, 138, 0.3);">
+              <h4 style="color: var(--secondary); margin-bottom: 0.5rem;">Fraud Detection</h4>
+              <p style="font-size: 0.9rem;">Isolated points = potential fraud</p>
+            </div>
+            <div style="background: rgba(185, 108, 255, 0.1); padding: 1rem; border-radius: 10px; border: 1px solid rgba(185, 108, 255, 0.3);">
+              <h4 style="color: var(--accent1); margin-bottom: 0.5rem;">Image Segmentation</h4>
+              <p style="font-size: 0.9rem;">Groups similar pixels together</p>
+            </div>
+            <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 10px; border: 1px solid rgba(0, 255, 136, 0.3);">
+              <h4 style="color: var(--accent3); margin-bottom: 0.5rem;">Customer Groups</h4>
+              <p style="font-size: 0.9rem;">Finds natural market segments</p>
+            </div>
+          </div>
+          <p style="text-align: center; margin-top: 1.5rem; font-style: italic;">DBSCAN in action across industries</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="action-buttons" style="position: relative; z-index: 10; margin-bottom: 2rem;">
+    <button class="btn" onclick="prevSlide()">← Back</button>
+    <button class="btn btn-primary" onclick="nextSlide()">Next →</button>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Prepared with 🌿 by The Natural Ninja | Unsupervised Learning Presentation</p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem;">"The goal is not to be perfect, but to be aware of the patterns" – Data Ninja Proverb</p>
   </footer>
 
   <script>
-    // Mobile menu toggle
-    const menuBtn = document.getElementById('menuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
+    // Presentation Logic
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const navItems = document.querySelectorAll('.nav-item');
+    const progressFill = document.getElementById('progress');
     
-    if (menuBtn && mobileMenu) {
-      menuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('open');
-        menuBtn.textContent = mobileMenu.classList.contains('open') ? '×' : '≡';
-      });
+    // Update progress bar
+    function updateProgress() {
+      const percent = ((currentSlide) / (slides.length - 1)) * 100;
+      progressFill.style.width = percent + '%';
     }
-
-    // Intersection Observer for animations
-    const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
     
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (entry.target.classList.contains('service')) {
-            entry.target.classList.add('animated');
-          } else if (entry.target.classList.contains('work-card')) {
-            entry.target.classList.add('animated');
-          } else if (entry.target.classList.contains('step')) {
-            entry.target.classList.add('animated');
-          }
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
-
-    // Observe elements for scroll animations
-    document.querySelectorAll('.service, .work-card, .step').forEach(el => {
-      observer.observe(el);
-    });
-
-    // Hero animations
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('animatedTitle').classList.add('animated');
-      }, 100);
-      
-      setTimeout(() => {
-        document.getElementById('animatedSub').classList.add('animated');
-      }, 300);
-      
-      setTimeout(() => {
-        document.getElementById('animatedCta').classList.add('animated');
-      }, 500);
-      
-      setTimeout(() => {
-        document.getElementById('animatedStats').classList.add('animated');
-      }, 700);
-      
-      setTimeout(() => {
-        document.getElementById('animatedVisual').classList.add('animated');
-      }, 400);
-    });
-
-    // Hero stats counters
-    function animateNumber(el, to, suffix = '') {
-      const start = 0;
-      const duration = 1500;
-      const startTime = performance.now();
-      
-      function step(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const easeProgress = 0.5 - Math.cos(progress * Math.PI) / 2; // easeInOutCubic
-        const value = Math.round(easeProgress * to);
-        
-        el.textContent = suffix ? value + suffix : value;
-        
-        if (progress < 1) {
-          requestAnimationFrame(step);
-        } else {
-          if (suffix) el.textContent = to + suffix;
-        }
-      }
-      
-      requestAnimationFrame(step);
-    }
-
-    // Animate hero stats
-    document.addEventListener('DOMContentLoaded', () => {
-      const heroStatsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            animateNumber(document.getElementById('stat-projects'), 72);
-            setTimeout(() => {
-              document.getElementById('stat-rating').textContent = '4.9★';
-            }, 500);
-            setTimeout(() => {
-              document.getElementById('stat-speed').textContent = '390ms';
-            }, 800);
-            heroStatsObserver.disconnect();
-          }
-        });
-      }, { threshold: 0.5 });
-      
-      heroStatsObserver.observe(document.getElementById('stat-projects'));
-
-      // Stats grid counters
-      document.querySelectorAll('.stat-card .num').forEach(el => {
-        const target = parseInt(el.getAttribute('data-count'));
-        const statsObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              animateNumber(el, target);
-              statsObserver.disconnect();
-            }
-          });
-        }, { threshold: 0.6 });
-        
-        statsObserver.observe(el);
-      });
-    });
-
-    // Testimonials slider
-    const dots = Array.from(document.querySelectorAll('.dot'));
-    const slides = Array.from(document.querySelectorAll('#testimonials .testimonial'));
-    
+    // Show specific slide
     function showSlide(index) {
-      slides.forEach((slide, i) => {
-        slide.classList.toggle('active', i === index);
+      // Validate index
+      if (index < 0) index = 0;
+      if (index >= slides.length) index = slides.length - 1;
+      
+      currentSlide = index;
+      
+      // Hide all slides
+      slides.forEach(slide => {
+        slide.classList.remove('active');
+        slide.style.opacity = '0';
       });
-      dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === index);
+      
+      // Show current slide
+      const current = slides[currentSlide];
+      current.classList.add('active');
+      setTimeout(() => {
+        current.style.opacity = '1';
+      }, 50);
+      
+      // Update navigation
+      navItems.forEach((item, idx) => {
+        item.classList.toggle('active', idx === currentSlide);
       });
+      
+      // Update progress
+      updateProgress();
     }
     
-    dots.forEach(dot => {
-      dot.addEventListener('click', () => {
-        showSlide(parseInt(dot.dataset.slide));
+    // Next slide
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        showSlide(currentSlide + 1);
+      }
+    }
+    
+    // Previous slide
+    function prevSlide() {
+      if (currentSlide > 0) {
+        showSlide(currentSlide - 1);
+      }
+    }
+    
+    // Navigation item clicks
+    navItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        showSlide(index);
       });
     });
     
-    let slideIndex = 0;
-    const slideInterval = setInterval(() => {
-      slideIndex = (slideIndex + 1) % slides.length;
-      showSlide(slideIndex);
-    }, 5000);
-
-    // Work filter
-    const grid = document.getElementById('workGrid');
-    const filterBtns = document.querySelectorAll('.tool-btn');
-    
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.setAttribute('aria-pressed', 'false'));
-        btn.setAttribute('aria-pressed', 'true');
-        
-        const tag = btn.dataset.filter;
-        
-        Array.from(grid.children).forEach(card => {
-          const show = tag === 'all' || card.dataset.tags.includes(tag);
-          card.style.display = show ? '' : 'none';
-          
-          if (show) {
-            // Re-trigger animation when filtering
-            card.classList.remove('animated');
-            void card.offsetWidth; // Trigger reflow
-            setTimeout(() => {
-              card.classList.add('animated');
-            }, 50);
-          }
-        });
-      });
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
     });
-
-    // Form submission
-    const contactForm = document.getElementById('contactForm');
-    const formMsg = document.getElementById('formMsg');
     
-    if (contactForm) {
-      contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Simple form validation
-        const formData = new FormData(contactForm);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const message = formData.get('message');
-        
-        if (name && email && message) {
-          formMsg.textContent = 'Thank you! We\'ll get back to you soon.';
-          formMsg.style.color = '#6EE7F9';
-          formMsg.style.opacity = '1';
-          contactForm.reset();
-          
-          setTimeout(() => {
-            formMsg.style.opacity = '0';
-          }, 5000);
-        }
-      });
-    }
-
-    // Set current year
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Add parallax effect to hero visual
-    const heroVisual = document.querySelector('.hero-visual');
-    if (heroVisual) {
-      document.addEventListener('mousemove', (e) => {
-        const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-        const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-        heroVisual.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-      });
-
-      // Reset on mouse leave
-      heroVisual.addEventListener('mouseleave', () => {
-        heroVisual.style.transform = 'rotateY(0deg) rotateX(0deg)';
-      });
-    }
-
-    // Enhanced canvas background with interactive elements
-    document.addEventListener('DOMContentLoaded', () => {
-      const canvas = document.getElementById('bg-canvas');
-      const ctx = canvas.getContext('2d');
-      let width, height;
-      
-      function resizeCanvas() {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-      }
-      
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
-      
-      const particles = [];
-      const particleCount = 50;
-      
-      // Create particles
-      for (let i = 0; i < particleCount; i++) {
-        particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          radius: Math.random() * 1.5 + 0.5,
-          color: `rgba(110, 231, 249, ${Math.random() * 0.5 + 0.3})`,
-          speedX: (Math.random() - 0.5) * 0.5,
-          speedY: (Math.random() - 0.5) * 0.5,
-          trail: []
-        });
-      }
-      
-      // Mouse interaction
-      let mouseX = 0;
-      let mouseY = 0;
-      let mouseActive = false;
-      
-      document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        mouseActive = true;
-        
-        // Add attraction effect
-        particles.forEach(p => {
-          const dx = mouseX - p.x;
-          const dy = mouseY - p.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < 200) {
-            const force = (200 - distance) / 1000;
-            p.speedX -= dx * force * 0.01;
-            p.speedY -= dy * force * 0.01;
-          }
-        });
-      });
-      
-      // Animation loop
-      function animate() {
-        ctx.clearRect(0, 0, width, height);
-        
-        // Draw gradient background
-        const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, Math.sqrt(width*width + height*height)/2);
-        gradient.addColorStop(0, 'rgba(6, 10, 23, 0.8)');
-        gradient.addColorStop(1, 'rgba(14, 30, 69, 0.9)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-        
-        // Update and draw particles
-        particles.forEach(particle => {
-          // Update position
-          particle.x += particle.speedX;
-          particle.y += particle.speedY;
-          
-          // Add friction
-          particle.speedX *= 0.98;
-          particle.speedY *= 0.98;
-          
-          // Add slight random movement
-          particle.speedX += (Math.random() - 0.5) * 0.02;
-          particle.speedY += (Math.random() - 0.5) * 0.02;
-          
-          // Keep within bounds
-          if (particle.x < 0 || particle.x > width) particle.speedX *= -0.8;
-          if (particle.y < 0 || particle.y > height) particle.speedY *= -0.8;
-          
-          particle.x = (particle.x + width) % width;
-          particle.y = (particle.y + height) % height;
-          
-          // Draw particle
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-          ctx.fillStyle = particle.color;
-          ctx.fill();
-          
-          // Add subtle glow
-          ctx.shadowBlur = 15;
-          ctx.shadowColor = particle.color;
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        });
-        
-        requestAnimationFrame(animate);
-      }
-      
-      animate();
-    });
+    // Initialize
+    showSlide(0);
   </script>
 </body>
 </html>
